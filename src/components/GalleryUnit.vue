@@ -1,7 +1,13 @@
 <template>
   <div
     class="unit-container"
-    v-bind:style="{ top: galleryPicture.positionY + 'px', left: galleryPicture.positionX + 'px' }"
+    v-bind:style="{
+      top: galleryPicture.positionY + 'px',
+      left: galleryPicture.positionX + 'px',
+      transform: `rotate(${galleryPicture.rotate}deg)`,
+      zIndex: galleryPicture.zIndex,
+      }"
+    @click="onClick(galleryPicture.id)"
   >
     <p>{{galleryPicture.title}}</p>
     <img :src="galleryPicture.url" />
@@ -10,22 +16,29 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
-import { Picture } from '@/api/data';
+import { GalleryPicture } from '@/store';
 
-export interface GalleryPicture extends Picture {
-  positionX: number;
-  positionY: number;
-  isCenter: boolean;
-}
 
 @Component
 export default class GalleryUnit extends Vue {
   @Prop() galleryPicture!: GalleryPicture;
+
+  onClick(index: number) {
+    this.$emit('makeUnitCenter', index);
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .unit-container {
   position: absolute;
+  width: 500px;
+  text-align: center;
+  transition: top 2s, left 2s, transform 500ms;
+  background-color: wheat;
+  cursor: pointer;
+  // img {
+  //   height: 65%;
+  // }
 }
 </style>

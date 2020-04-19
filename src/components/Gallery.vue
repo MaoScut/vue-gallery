@@ -1,17 +1,22 @@
 <template>
   <div class="gallery">
-    <p>Gallery Component Works!</p>
+    <!-- <p>Gallery Component Works!</p>
     <p>list: {{list}}</p>
     <p>isLoading: {{isLoading}}</p>
-    <button @click="fetchData">重新获取</button>
-    <GalleryUnit v-for="(item, index) in pictures" :key="index" :gallery-picture="item" />
+    <button @click="fetchData">重新获取</button>-->
+    <GalleryUnit
+      @makeUnitCenter="makeUnitCenter"
+      v-for="(item, index) in pictures"
+      :key="index"
+      :gallery-picture="item"
+    />
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { pictureWidth, pictureHeight } from '@/api/data';
-import GalleryUnit, { GalleryPicture } from './GalleryUnit.vue';
-import { AppState } from '../store';
+// import { pictureWidth, pictureHeight } from '@/api/data';
+import GalleryUnit from './GalleryUnit.vue';
+import { AppState, GalleryPicture } from '../store';
 
 @Component({
   components: {
@@ -31,15 +36,7 @@ export default class Gallery extends Vue {
 
   get pictures(): GalleryPicture[] {
     const { state }: { state: AppState } = this.$store;
-    const xPositionMax = this.width - pictureWidth;
-    const yPositionMax = this.height - pictureHeight;
-    const centerIndex = Math.floor(Math.random() * state.pictures.length);
-    return state.pictures.map((p, index) => ({
-      ...p,
-      positionX: Math.random() * xPositionMax,
-      positionY: Math.random() * yPositionMax,
-      isCenter: index === centerIndex,
-    }));
+    return state.pictures;
   }
 
   get isLoading() {
@@ -50,12 +47,25 @@ export default class Gallery extends Vue {
     this.fetchData();
     this.height = this.$el.clientHeight;
     this.width = this.$el.clientWidth;
-    console.log(this.height);
-    console.log(this.width);
   }
 
   fetchData() {
-    this.$store.dispatch('fetchData');
+    this.$store.dispatch('fetchData').then(() => {
+      setTimeout(() => {
+        this.$store.commit('spread', {
+          xAxisMax: this.$el.clientWidth,
+          yAxisMax: this.$el.clientHeight,
+        });
+      }, 500);
+    });
+  }
+
+  makeUnitCenter(id: number) {
+    this.$store.commit('makeCenter', {
+      xAxisMax: this.$el.clientWidth,
+      yAxisMax: this.$el.clientHeight,
+      id,
+    });
   }
 }
 </script>
