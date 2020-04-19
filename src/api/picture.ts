@@ -1,16 +1,5 @@
-export interface Picture {
-  title: string;
-  url: string;
-  description: string;
-}
+import { Picture, pictureData } from './data';
 
-const fakeData: Picture[] = [
-  {
-    title: 'p1',
-    url: '/p1.jpg',
-    description: 'this is p1',
-  },
-];
 
 class PictureService {
   pictures: Picture[] = [];
@@ -18,11 +7,13 @@ class PictureService {
   getAll(): Promise<Picture[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        this.pictures = fakeData;
-        resolve(fakeData);
+        this.pictures = pictureData;
+        resolve(pictureData);
       }, 1000);
     });
   }
 }
 
-export const pictureService = new PictureService();
+const pictureService = new PictureService();
+
+export default pictureService;

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { Picture, pictureService } from '@/api/picture';
+import pictureService from '@/api/picture';
+import { Picture } from '@/api/data';
 
 Vue.use(Vuex);
 

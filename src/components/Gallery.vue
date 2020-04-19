@@ -1,15 +1,17 @@
 <template>
-  <div>
+  <div class="gallery">
     <p>Gallery Component Works!</p>
     <p>list: {{list}}</p>
     <p>isLoading: {{isLoading}}</p>
     <button @click="fetchData">重新获取</button>
-    <GalleryUnit :gallery-picture="pictures[0]"/>
+    <GalleryUnit v-for="(item, index) in pictures" :key="index" :gallery-picture="item" />
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { pictureWidth, pictureHeight } from '@/api/data';
 import GalleryUnit, { GalleryPicture } from './GalleryUnit.vue';
+import { AppState } from '../store';
 
 @Component({
   components: {
@@ -19,17 +21,25 @@ import GalleryUnit, { GalleryPicture } from './GalleryUnit.vue';
 export default class Gallery extends Vue {
   @Prop() private msg!: string;
 
-  pictures: GalleryPicture[] = [{
-    title: 'p1',
-    url: '/pictures/wallhaven-15776.jpg',
-    description: 'p1 desc',
-    positionX: 0,
-    positionY: 0,
-    isCenter: false,
-  }];
+  height = 0;
+
+  width = 0;
 
   get list() {
     return this.$store.state.pictures;
+  }
+
+  get pictures(): GalleryPicture[] {
+    const { state }: { state: AppState } = this.$store;
+    const xPositionMax = this.width - pictureWidth;
+    const yPositionMax = this.height - pictureHeight;
+    const centerIndex = Math.floor(Math.random() * state.pictures.length);
+    return state.pictures.map((p, index) => ({
+      ...p,
+      positionX: Math.random() * xPositionMax,
+      positionY: Math.random() * yPositionMax,
+      isCenter: index === centerIndex,
+    }));
   }
 
   get isLoading() {
@@ -38,6 +48,10 @@ export default class Gallery extends Vue {
 
   mounted() {
     this.fetchData();
+    this.height = this.$el.clientHeight;
+    this.width = this.$el.clientWidth;
+    console.log(this.height);
+    console.log(this.width);
   }
 
   fetchData() {
@@ -45,3 +59,9 @@ export default class Gallery extends Vue {
   }
 }
 </script>
+
+<style lang="less" scoped>
+.gallery {
+  height: 100%;
+}
+</style>
